@@ -3,6 +3,7 @@
 ## 文章
 
 * [很多人上来就删除的package-lock.json，还有这么多你不知道的（深度内容）](https://mp.weixin.qq.com/s/9H7T-m0TEwg-WjwAW4cqJA)
+* [Best practices for creating a modern npm package](https://snyk.io/blog/best-practices-create-modern-npm-package/)
 
 ## 安装
 
