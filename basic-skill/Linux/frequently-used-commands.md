@@ -1,5 +1,12 @@
 # Frequently used commands
 
+## 账号
+
+```sh
+# 切换root账号
+sudo su
+```
+
 ## 权限
 
 1. 更改文件所有者 `chown -R 账号:组名 文件或目录`
@@ -17,4 +24,12 @@ which node
 
 ```BASH
 iptables -A INPUT -p tcp --dport 8080 -j ACCEPT
+```
+
+## 解决方案
+
+1. /usr/bin/env: ‘python’: No such file or directory
+
+```sh
+ sudo apt install python-is-python3
 ```
