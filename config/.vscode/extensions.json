@@ -1,0 +1,12 @@
+{
+  "recommendations": [
+    "vscode-icons-team.vscode-icons",
+    "stylelint.vscode-stylelint",
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "Vue.volar",
+    "Vue.vscode-typescript-vue-plugin",
+    "lokalise.i18n-ally",
+    "mikestead.dotenv",
+  ]
+}
