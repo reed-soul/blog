@@ -33,3 +33,31 @@ iptables -A INPUT -p tcp --dport 8080 -j ACCEPT
 ```sh
  sudo apt install python-is-python3
 ```
+
+
+## 提取code目录下的所有子仓库，并且保存层级结构
+```bash
+
+#!/bin/bash
+
+# 创建一个空的shell脚本文件
+echo "#!/bin/bash" > restore_git_repos.sh
+
+# 遍历"code"目录下的所有子目录
+find ./code -type d -name ".git" | while read -r gitdir; do
+    # 获取父目录路径
+    parentdir=$(dirname "$gitdir")
+    # 获取相对于"code"目录的路径
+    relative_path=${parentdir#./code/}
+    # 进入该目录
+    cd "$parentdir" || exit
+    # 获取远程仓库URL
+    remote_url=$(git config --get remote.origin.url)
+    # 将创建目录和克隆命令写入"restore_git_repos.sh"文件
+    echo "mkdir -p $relative_path" >> ../../restore_git_repos.sh
+    echo "git clone $remote_url $relative_path" >> ../../restore_git_repos.sh
+    # 返回原始目录
+    cd - || exit
+done
+
+```
