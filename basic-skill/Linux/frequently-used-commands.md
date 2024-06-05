@@ -20,7 +20,7 @@ which node
 
 ## 端口
 
-* 开启端口
+- 开启端口
 
 ```BASH
 iptables -A INPUT -p tcp --dport 8080 -j ACCEPT
@@ -34,8 +34,8 @@ iptables -A INPUT -p tcp --dport 8080 -j ACCEPT
  sudo apt install python-is-python3
 ```
 
+## 提取 code 目录下的所有子仓库，并且保存层级结构
 
-## 提取code目录下的所有子仓库，并且保存层级结构
 ```bash
 
 #!/bin/bash
