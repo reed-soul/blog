@@ -44,6 +44,59 @@ mongo -u root -p password
 (2) Windows Subsystem for Linux Documentation | Microsoft Learn. <https://learn.microsoft.com/en-us/windows/wsl/> 访问时间 2023/3/21.
 (3) WSL2: The Complete Guide for Windows 10 & 11 — SitePoint. <https://www.sitepoint.com/wsl2/> 访问时间 2023/3/21.
 
+
+
+## WSL代理配置(NAT&镜像)
+
+### NAT
+WSL目前主要有NAT和Mirror两种方式实现对外部的网络连接, 前者在大多数虚拟机中都用使用, 仅需在~/.bashrc文件中添加相应的环境变量即可(将下面的IP地址和端口号替换为自己的即可).
+
+注意完成对~/.bashrc文件的修改之后, 通过source ~/.bashrc命令执行使配置生效.
+
+```sh
+hostip=$(cat /etc/resolv.conf |grep -oP '(?<=nameserver\ ).*')
+export https_proxy="http://${hostip}:10809"
+export http_proxy="http://${hostip}:10809"
+export all_proxy="socks5://${hostip}:10808
+
+```
+
+但是需要注意的是, 采用NAT方案的确能够在WSL中直接使用宿主机提供的代理. 但是由于NAT屏蔽了内网信息, 因此从外部是无法直接访问WSL的, 这对于将WSL用作服务器的场景非常致命.
+
+### 镜像
+此时可采用WSL2提供的镜像网络, 此方法不需要将WSL作为宿主机的局域网成员, 而使用完全相同的IP地址, 理论上只要宿主机能够连接被其他网络发现, WSL也必然能够被发现. 相应的配置也非常简单, 在用户根目录(C:\Users\<username>)下创建.wslconfig文件, 并在其中写入networkingMode=mirrored即可.
+
+注意配置之前需要先将WSL关闭, 相应命令为wsl --shutdown.
+
+```sh
+# Settings apply across all Linux distros running on WSL 2
+[wsl2]
+# Limits VM memory to use no more than 4 GB, this can be set as whole numbers using GB or MB
+memory=16GB
+# Sets the VM to use two virtual processors
+processors=8
+[experimental]
+autoMemoryReclaim=gradual # 开启自动回收内存，可在 gradual, dropcache, disabled 之间选择
+networkingMode=mirrored # 开启镜像网络
+dnsTunneling=true # 开启 DNS Tunneling
+firewall=true # 开启 Windows 防火墙
+autoProxy=true # 开启自动同步代理
+sparseVhd=true # 开启自动释放 WSL2 虚拟硬盘空间
+```
+之后直接在WSL中将代理设置为本地即可(端口号根据代理客户端的不同请自行修改), 完成之后即可正常使用代理访问外部网络.
+
+```sh
+hostip=$(cat /etc/resolv.conf |grep -oP '(?<=nameserver\ ).*')
+export https_proxy="http://${hostip}:10809"
+export http_proxy="http://${hostip}:10809"
+export all_proxy="socks5://${hostip}:10808
+
+```
+
+### 测试
+
+请注意, 部分网址因为各种原因无法回应ICMP回显请求, 因此可能ping不通, 但是实际上代理已经配置完成, 推荐使用curl google.com命令进行测试, 出现下面结果表示代理配置成功.
+
 ## 如何在手机上访问 WSL 中的 node 服务
 
 ### 问题描述
