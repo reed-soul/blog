@@ -46,7 +46,104 @@ mongo -u root -p password
 
 
 
-## WSL代理配置(NAT&镜像)
+## WSL2 代理配置 推荐
+
+
+### 添加代理脚本
+用户根目录添加proxy.sh文件，内容如下：
+
+```sh
+#!/bin/sh
+
+## docs https://www.cnblogs.com/tuilk/p/16287472.html
+hostip=$(cat /etc/resolv.conf | grep nameserver | awk '{ print $2 }')
+wslip=$(hostname -I | awk '{print $1}')
+port=10809
+ 
+PROXY_HTTP="http://${hostip}:${port}"
+PROXY_SOCKS5="socks5://${hostip}:10808"
+
+set_proxy(){
+  export http_proxy="${PROXY_HTTP}"
+  export HTTP_PROXY="${PROXY_HTTP}"
+ 
+  export https_proxy="${PROXY_HTTP}"
+  export HTTPS_proxy="${PROXY_HTTP}"
+ 
+  export ALL_PROXY="${PROXY_SOCKS5}"
+ 
+  git config --global http.https://github.com.proxy ${PROXY_HTTP}
+  git config --global https.https://github.com.proxy ${PROXY_HTTP}
+ 
+  echo "Proxy has been opened."
+}
+ 
+unset_proxy(){
+  unset http_proxy
+  unset HTTP_PROXY
+  unset https_proxy
+  unset HTTPS_PROXY
+  unset ALL_PROXY
+  unset all_proxy
+  git config --global --unset http.https://github.com.proxy
+  git config --global --unset https.https://github.com.proxy
+ 
+  echo "Proxy has been closed."
+}
+ 
+test_setting(){
+  echo "Host IP:" ${hostip}
+  echo "WSL IP:" ${wslip}
+  echo "Try to connect to Google..."
+  resp=$(curl -I -s --connect-timeout 5 -m 5 -w "%{http_code}" -o /dev/null www.google.com)
+  if [ ${resp} = 200 ]; then
+    echo "Proxy setup succeeded!"
+  else
+    echo "Proxy setup failed!"
+  fi
+}
+ 
+if [ "$1" = "set" ]
+then
+  set_proxy
+ 
+elif [ "$1" = "unset" ]
+then
+  unset_proxy
+ 
+elif [ "$1" = "test" ]
+then
+  test_setting
+else
+  echo "Unsupported arguments."
+fi
+```
+
+
+
+### 配置命令
+
+在zshrc或者bashrc中添加如下命令
+```sh
+alias proxy="source ~/proxy.sh"
+```
+
+### 使用方法
+
+```sh
+# 开启代理
+proxy set
+
+# 关闭代理
+proxy unset
+
+# 测试代理
+proxy test
+```
+
+
+
+## WSL代理配置(NAT&镜像)  不建议
 
 ### NAT
 WSL目前主要有NAT和Mirror两种方式实现对外部的网络连接, 前者在大多数虚拟机中都用使用, 仅需在~/.bashrc文件中添加相应的环境变量即可(将下面的IP地址和端口号替换为自己的即可).
