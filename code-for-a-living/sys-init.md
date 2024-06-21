@@ -25,6 +25,11 @@ git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-m
 sudo apt-get install git
 ```
 
+#### 设置git push 自动创建远程仓库
+```shell
+git config --global push.autoSetupRemote true
+```
+
 ### 安装nvm
 ```shell
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
